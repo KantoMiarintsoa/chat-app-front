@@ -1,12 +1,14 @@
+"use server"
+
 import { LoginSchemaType } from "@/app/login/components/shema"
 import { RegisterFormSchema } from "@/app/register/components/schema"
-import { ShowDetailsMessage } from "@/types/message"
+import { Message, ShowDetailsMessage } from "@/types/message"
 import { PaginationResponse } from "@/types/pagination"
 import { Session, User } from "@/types/user"
 import axios from "axios"
 import { cookies } from "next/headers"
 
-export const API_URL = process.env.API_URL
+const API_URL = process.env.API_URL
 
 const api = axios.create({
     baseURL: API_URL,
@@ -35,3 +37,11 @@ export async function getUsers(page: number = 1) {
     return await api.get<PaginationResponse<ShowDetailsMessage>>(`chat/last-users-messages?pages=${page}`)
 }
 
+export async function getDetailsUser(id: number) {
+    return (await api.get<User>(`users/details/${id}`)).data
+}
+
+export async function getMessages(userId: number, page: number = 1) {
+    return (await api.get<PaginationResponse<Message>>(`chat/conversation/${userId}?page=${page}`)).data
+
+}

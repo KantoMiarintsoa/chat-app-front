@@ -9,7 +9,7 @@ import ListUser from './listUser'
 
 function LastConversation() {
   return (
-    <div className='flex flex-1 flex-col max-h-screen max-w-[400px] bg-primary p-5 gap-10'>
+    <div className='flex flex-1 flex-col max-h-screen bg-primary p-5 gap-10 min-w-[340px] max-w-[300px]'>
         <div className='flex gap-2 items-center'>
             <Image
                 src={profile} alt='me' className='w-[50px] h-[50px] rounded-full '/>
