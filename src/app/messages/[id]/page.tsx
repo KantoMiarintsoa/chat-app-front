@@ -7,7 +7,7 @@ function ChatPage() {
     const param=useParams();
     console.log(param.id)
   return (
-    <div className='min-h-screen w-full p-8 flex'>
+    <div className='w-full p-8 flex flex-1'>
         <Chat userId={parseInt(param.id?.toString()??"0")}/>
         
     </div>

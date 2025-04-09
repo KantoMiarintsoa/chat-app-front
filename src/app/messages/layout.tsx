@@ -12,10 +12,9 @@ async function Layout(
   return (
     <div className='flex w-full min-h-screen'>
         <SocketProvider apiUrl={process.env.API_URL as string} token={session.access_token}>
-          <LastConversation/>
-              {children}
-          </SocketProvider>
-        
+            <LastConversation/>
+            {children}
+        </SocketProvider>
     </div>
   )
 }

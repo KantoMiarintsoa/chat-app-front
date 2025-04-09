@@ -72,7 +72,7 @@ import { useSocket } from './providers/socketProvider'
     }
 
   return (
-    <Card className='h-full w-full flex flex-col bg-blue-50 pt-0'>
+    <Card className='flex-1 w-full flex flex-col bg-blue-50 pt-0'>
         <CardTitle className='p-4 flex gap-2 items-center bg-white rounded-t-xl'>
             {
                 loading?(
@@ -87,14 +87,14 @@ import { useSocket } from './providers/socketProvider'
                 )
             }
         </CardTitle>
-        <CardContent className='flex-1  flex'>
+        <CardContent className='overflow-auto h-[calc(100vh-270px)]'>
             {loading?(
                 <div className='flex-1 justify-center items-center flex'>
                     <Spinner/>
                 </div>
             )
             :
-            <div className='flex-1  flex flex-col-reverse gap-2 overflow-auto'>
+            <div className='flex flex-col-reverse gap-2'>
                 {
                     messages.map((message,index)=>(
                         <MessageItem  message={message} key={index}/>
