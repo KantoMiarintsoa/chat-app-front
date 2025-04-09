@@ -42,6 +42,6 @@ export async function getDetailsUser(id: number) {
 }
 
 export async function getMessages(userId: number, page: number = 1) {
-    return (await api.get<PaginationResponse<Message>>(`chat/conversation/${userId}?page=${page}`)).data
+    return (await api.get<PaginationResponse<Message>>(`chat/get/${userId}?page=${page}`)).data
 
 }

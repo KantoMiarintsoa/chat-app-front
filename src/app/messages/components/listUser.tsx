@@ -1,19 +1,29 @@
-import React from 'react'
-import Image from "next/image"
-import profile from "@/assets/images/person.png"
-import UserItem from './userItem'
-import { getUsers } from '@/service/api'
-import { cookies } from 'next/headers'
-import { Session } from '@/types/user'
+"use client";
 
-async function ListUser() {
-    const response=(await getUsers()).data
-    const userSession=(JSON.parse((await cookies()).get("session")?.value??"")as Session).user
- 
+import React, { useEffect, useState } from 'react'
+import UserItem from './userItem'
+import { Session, User } from '@/types/user'
+import { Message, ShowDetailsMessage } from '@/types/message'
+import { useSocket } from './providers/socketProvider';
+
+function ListUser({users, user}:{users:ShowDetailsMessage[],user:User}) {
+  const [lastUsers, setLastUsers]=useState(users)
+  const socket=useSocket();
+
+  useEffect(()=>{
+    if(!socket) return;
+
+    socket.on("new-message",(data:Message)=>{
+      const otherUser=data.isSender? data.receiver.id:data.sender.id;
+      setLastUsers(prev=>[data, ...prev.filter(message=>message.receiver.id!==otherUser && message.sender.id!==otherUser)])
+    })
+
+  },[socket])
+
   return (
     <div className="flex flex-col gap-2">
-      {response.data.map((user,index)=>(
-        <UserItem key={index} sender={user.sender} receiver={user.receiver} content={user.content} user={userSession}/>
+      {lastUsers.map((message,index)=>(
+        <UserItem key={index} sender={message.sender} receiver={message.receiver} content={message.content} user={user}/>
       ))}
     </div>
   )

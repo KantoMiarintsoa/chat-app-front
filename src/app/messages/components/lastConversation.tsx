@@ -6,8 +6,14 @@ import { EllipsisIcon,SearchIcon} from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import ListUser from './listUser'
+import { getUsers } from '@/service/api'
+import { Session } from '@/types/user'
+import { cookies } from 'next/headers'
 
-function LastConversation() {
+async function LastConversation() {
+   const response=(await getUsers()).data
+    const userSession=(JSON.parse((await cookies()).get("session")?.value??"")as Session).user
+
   return (
     <div className='flex flex-1 flex-col max-h-screen bg-primary p-5 gap-10 min-w-[340px] max-w-[300px]'>
         <div className='flex gap-2 items-center'>
@@ -26,7 +32,7 @@ function LastConversation() {
             <Input className='flex-1 border-none focus-visible:ring-0' placeholder='Rechercher un utilisateur...'/>
         </div>
         <div className='flex-1 overflow-auto'>
-        <ListUser/>
+        <ListUser users={response.data} user={userSession}/>
 
         </div>
     </div>

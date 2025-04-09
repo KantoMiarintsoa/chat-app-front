@@ -16,7 +16,9 @@ export type Message = {
     content: string
     id: number
     createdAt: string
-    isRead: string
+    isRead: boolean
     replyMessageId: number
     replyTo: Message
-}
+    isSender: boolean
+    messageType: string
+} 

@@ -2,6 +2,7 @@ import React from 'react'
 import Image from "next/image"
 import profile from "@/assets/images/person.png"
 import { ShortDetailsUser, User } from '@/types/user'
+import Link from 'next/link'
 
 
 type UserItemProps={
@@ -13,7 +14,7 @@ type UserItemProps={
 }
 function UserItem({sender,receiver,content,user}:UserItemProps) {
   return (
-    <div className='flex gap-2 items-center rounded-lg p-2 cursor-pointer hover:bg-slate-800'>
+    <Link href={`/messages/${sender.id==user.id? receiver.id:sender.id}`}className='flex gap-2 items-center rounded-lg p-2 cursor-pointer hover:bg-slate-800'>
             <Image
                 src={profile} alt='me' className='w-[50px] h-[50px] rounded-full '/>
                 <div className='flex flex-col'>
@@ -23,7 +24,7 @@ function UserItem({sender,receiver,content,user}:UserItemProps) {
                     <p className='text-sm text-gray-50'>{content}</p>
 
                 </div>
-        </div>
+        </Link>
   )
 }
 
