@@ -9,6 +9,8 @@ import ListUser from './listUser'
 import { getUsers } from '@/service/api'
 import { Session } from '@/types/user'
 import { cookies } from 'next/headers'
+import ProfilDropDown from '@/components/ui/profileDropDown'
+import UpdateProfil from '@/components/updateProfile'
 
 async function LastConversation() {
    const response=(await getUsers()).data
@@ -19,10 +21,11 @@ async function LastConversation() {
         <div className='flex gap-2 items-center'>
             <Image
                 src={profile} alt='me' className='w-[50px] h-[50px] rounded-full '/>
-                <p className='text-lg font-semibold text-white flex-1'>Kanto Sarobidy</p>
-                <button  className='text-white cursor-pointer hover:bg-amber-30 rounded-4xl'>
+                <p className='text-lg font-semibold text-white flex-1'>{userSession.firstName} {userSession.lastName}</p>
+                {/* <button  className='text-white cursor-pointer hover:bg-amber-30 rounded-4xl'>
                         <EllipsisIcon/>
-                </button>
+                </button> */}
+                <ProfilDropDown/>
         </div>
 
         <div className='flex rounded-full bg-slate-800 p-1 text-white'>

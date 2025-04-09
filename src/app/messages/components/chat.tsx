@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/loader'
 import MessageItem from './messaageItem'
 import { useSocket } from './providers/socketProvider'
+import { Send } from 'lucide-react';
 
  function Chat({userId}:{userId:number}) {
     const[loading,setLoading]=useState(true)
@@ -106,7 +107,8 @@ import { useSocket } from './providers/socketProvider'
         </CardContent>
         <CardFooter className='px-2 flex gap-2 items-end '>
             <AutosizeTextarea maxHeight={200} className='flex-1 ' rows={1} minHeight={26} onChange={(event)=>setNewMessage(event.target.value)}/>
-            <Button variant={'ghost'} className='text-lg cursor-pointer' disabled={newMessage===''} onClick={()=>(sendMessage(newMessage))}>
+            <Button variant={'ghost'} className='text-lg cursor-pointer border border-blue-500 bg-transparent hover:bg-blue-100 text-blue-600 px-4 py-2 rounded flex items-center gap-2' disabled={newMessage===''} onClick={()=>(sendMessage(newMessage))}>
+                <Send size={18}/>
                     Envoyer
             </Button>
         </CardFooter>
