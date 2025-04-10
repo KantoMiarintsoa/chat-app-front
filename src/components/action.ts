@@ -16,4 +16,17 @@ export async function getSession() {
         return null;
     }
     return JSON.parse(session) as Session
-}   
+}
+
+export async function updateSession(session: Session | null) {
+    if (!session) {
+        return ((await cookies()).delete("session"))
+    }
+
+    ((await cookies()).set("session", JSON.stringify(session),
+        {
+            httpOnly: true,
+            secure: process.env.NODE_ENV == "production",
+            sameSite: "strict"
+        }))
+}

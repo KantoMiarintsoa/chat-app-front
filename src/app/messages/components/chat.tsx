@@ -12,107 +12,169 @@ import { Spinner } from '@/components/ui/loader'
 import MessageItem from './messaageItem'
 import { useSocket } from './providers/socketProvider'
 import { Send } from 'lucide-react';
+import { useAuth } from '@/components/providers/AuthProviders'
 
- function Chat({userId}:{userId:number}) {
-    const[loading,setLoading]=useState(true)
-    const[messages,setMessages]=useState<Message[]>([])
-    const [nextPage,setNextPage]=useState<number |null>(null)
-    const [user,setUser]=useState<User | null>(null)
-    const socket=useSocket()
-    const [newMessage,setNewMessage]=useState("")
-    
-    useEffect(()=>{
-        async function fetchData(){
-            try{
-                const user=await getDetailsUser(userId);
-                console.log(user)
-                setUser(user)
-                const paginatedMessage=await getMessages(userId,1)
-                console.log(paginatedMessage)
-                setNextPage(paginatedMessage.nextPage)
-                setLoading(false)
-                setMessages(paginatedMessage.data)
-            }
-            catch{
-                setLoading(false)
-                setUser(null)
-                
-            }
-        }
-        fetchData()
-    }, [])
+function Chat({ userId }: { userId: number }) {
+  const [loading, setLoading] = useState(true)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [nextPage, setNextPage] = useState<number | null>(null)
+  const [user, setUser] = useState<User | undefined>(undefined)
+  const socket = useSocket()
+  const [newMessage, setNewMessage] = useState("")
 
-    useEffect(()=>{
-        if(!socket) return;
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [newUsername, setNewUsername] = useState('')
 
-        socket.on("new-message",(data:Message)=>{
-            if(data.sender.id===userId || data.receiver.id=== userId){
-                setMessages(prev=>[data,...prev])
-            }
-        })
-    },[socket])
+  const {session}=useAuth()
 
-
-    if(user===null && !loading){
-        return (
-            <Card className='h-full'>
-                <CardTitle className='p-5 text-gray-500'>
-                    <p>Utilisateur non trouver</p>
-                </CardTitle>
-
-            </Card>  
-        )
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const user = await getDetailsUser(userId);
+        setUser(user)
+        const paginatedMessage = await getMessages(userId, 1)
+        setNextPage(paginatedMessage.nextPage)
+        setLoading(false)
+        setMessages(paginatedMessage.data)
+      } catch {
+        setLoading(false)
+        setUser(undefined)
+      }
     }
+    fetchData()
+  }, [])
 
-    function sendMessage(content:string){
-        if(!socket)return;
-        socket.emit("sendMessage",{
-            content,
-            receiverId:userId
-        })
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("new-message", (data: Message) => {
+      if (data.sender.id === userId || data.receiver.id === userId) {
+        setMessages(prev => [data, ...prev])
+      }
+    })
+
+    socket.on("usernameChanged", (data: { id: number, newUsername: string }) => {
+      if (user && data.id === user.id) {
+        setUser({ ...user, username: data.newUsername });
+      }
+    })
+
+    return () => {
+      socket.off("new-message")
+      socket.off("usernameChanged")
     }
+  }, [socket, userId, user])
+
+  if (user === null && !loading) {
+    return (
+      <Card className='h-full'>
+        <CardTitle className='p-5 text-gray-500'>
+          <p>Utilisateur non trouvé</p>
+        </CardTitle>
+      </Card>
+    )
+  }
+
+  function sendMessage(content: string) {
+    if (!socket) return;
+    socket.emit("sendMessage", {
+      content,
+      receiverId: userId
+    })
+    setNewMessage(""); 
+  }
+
+  const handleUsernameChange = () => {
+    if (newUsername.trim()) {
+      socket?.emit('changeUsername', {
+        newUsername,
+        targetUserId: user?.id 
+      });
+      setShowDropdown(false)
+      setNewUsername("")
+    }
+  }
 
   return (
     <Card className='flex-1 w-full flex flex-col bg-blue-50 pt-0'>
-        <CardTitle className='p-4 flex gap-2 items-center bg-white rounded-t-xl'>
-            {
-                loading?(
-                    <p>Loading....</p>
-                ):(
-                    <>
-                        <Image
-                            src={userImage} alt='me' className='w-[50px] h-[50px] rounded-full '/>
-                        <p >{user?.username}</p>
+      <CardTitle className='p-4 flex gap-2 items-center bg-white rounded-t-xl relative'>
+        {
+          loading ? (
+            <p>Loading....</p>
+          ) : (
+            <>
+              <Image
+                src={user?.profilePicture??userImage}
+                alt='me'
+                className='w-[50px] h-[50px] rounded-full' width={20} height={20}
+              />
+              <p
+                className="text-black font-semibold cursor-pointer"
+                onClick={() => setShowDropdown(prev => !prev)}
+              >
+                {user?.username}
+              </p>
 
-                    </>
-                )
-            }
-        </CardTitle>
-        <CardContent className='overflow-auto h-[calc(100vh-270px)]'>
-            {loading?(
-                <div className='flex-1 justify-center items-center flex'>
-                    <Spinner/>
+              {showDropdown && (
+                <div className="absolute top-full left-14 mt-2 bg-white border border-gray-200 shadow-md p-4 rounded-md z-10 w-64">
+                  <input
+                    type="text"
+                    className="w-full border border-gray-300 rounded px-2 py-1 mb-2 text-sm"
+                    placeholder="Nouveau pseudo"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                  />
+                  <Button
+                    className="w-full bg-blue-600 text-white py-1 hover:bg-blue-700 text-sm"
+                    onClick={handleUsernameChange}
+                  >
+                    Modifier le pseudo
+                  </Button>
                 </div>
-            )
-            :
-            <div className='flex flex-col-reverse gap-2'>
-                {
-                    messages.map((message,index)=>(
-                        <MessageItem  message={message} key={index}/>
-                    ))
-                }
+              )}
+            </>
+          )
+        }
+      </CardTitle>
 
+      <CardContent className='overflow-auto h-[calc(100vh-270px)]'>
+        {
+          loading ? (
+            <div className='flex-1 justify-center items-center flex'>
+              <Spinner />
             </div>
-            }
-        </CardContent>
-        <CardFooter className='px-2 flex gap-2 items-end '>
-            <AutosizeTextarea maxHeight={200} className='flex-1 ' rows={1} minHeight={26} onChange={(event)=>setNewMessage(event.target.value)}/>
-            <Button variant={'ghost'} className='text-lg cursor-pointer border border-blue-500 bg-transparent hover:bg-blue-100 text-blue-600 px-4 py-2 rounded flex items-center gap-2' disabled={newMessage===''} onClick={()=>(sendMessage(newMessage))}>
-                <Send size={18}/>
-                    Envoyer
-            </Button>
-        </CardFooter>
-    </Card> 
+          ) : (
+            <div className='flex flex-col-reverse gap-2'>
+              {
+                messages.map((message, index) => (
+                  <MessageItem message={message} key={index} otherUser={user} user={session?.user} />
+                ))
+              }
+            </div>
+          )
+        }
+      </CardContent>
+
+      <CardFooter className='px-2 flex gap-2 items-end '>
+        <AutosizeTextarea
+          maxHeight={200}
+          className='flex-1 '
+          rows={1}
+          minHeight={26}
+          onChange={(event) => setNewMessage(event.target.value)}
+          value={newMessage}
+        />
+        <Button
+          variant={'ghost'}
+          className='text-lg cursor-pointer border border-blue-300 bg-transparent hover:bg-blue-100 text-blue-400 px-4 py-2 rounded flex items-center gap-2'
+          disabled={newMessage === ''}
+          onClick={() => sendMessage(newMessage)}
+        >
+          <Send size={18} />
+          Envoyer
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }
 

@@ -20,7 +20,8 @@ async function LastConversation() {
     <div className='flex flex-1 flex-col max-h-screen bg-primary p-5 gap-10 min-w-[340px] max-w-[300px]'>
         <div className='flex gap-2 items-center'>
             <Image
-                src={profile} alt='me' className='w-[50px] h-[50px] rounded-full '/>
+                src={userSession.profilePicture?? profile }
+                alt='me' className='w-[50px] h-[50px] rounded-full ' width={20} height={20}/>
                 <p className='text-lg font-semibold text-white flex-1'>{userSession.firstName} {userSession.lastName}</p>
                 {/* <button  className='text-white cursor-pointer hover:bg-amber-30 rounded-4xl'>
                         <EllipsisIcon/>

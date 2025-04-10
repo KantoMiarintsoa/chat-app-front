@@ -1,7 +1,7 @@
 "use client"
 import { Session } from "@/types/user";
 import { createContext, useContext, useEffect, useState } from "react";
-import { getSession } from "../action";
+import { getSession, updateSession as updateSessionAction} from "../action";
 
 type AutContextType={
     session:Session |null;
@@ -18,6 +18,12 @@ const AuthContext=createContext<AutContextType>({
 function AuthProvider({children}:{children:React.ReactNode}){
     const [session,setSession]=useState<Session |null>(null);
     const [status,setStatus]=useState<"loading" | "authentificated" | "unauthenticated">("loading")
+
+    async function updateSession(session:Session |null){
+        setSession(session)
+        await updateSessionAction(session)
+        if(!session) setStatus("unauthenticated")
+    }
 
     useEffect(()=>{
         async function fetchSession(){
@@ -37,7 +43,7 @@ function AuthProvider({children}:{children:React.ReactNode}){
     }, [])
 
     return (
-        <AuthContext.Provider value={{session,setSession,status}}>
+        <AuthContext.Provider value={{session,setSession:updateSession,status}}>
             {children}
         </AuthContext.Provider>
     )

@@ -3,7 +3,8 @@ export type User = {
     lastName: string,
     email: string,
     username: string,
-    id: number
+    id: number,
+    profilePicture?: string
 }
 
 export type Session = {
@@ -15,4 +16,5 @@ export type ShortDetailsUser = {
     id: number
     email: string
     username: string
+    profilePicture: string | undefined
 }

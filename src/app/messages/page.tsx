@@ -1,8 +1,11 @@
 import React from 'react'
+import Message from './acceuil'
 
 function MessagePage() {
   return (
-    <div>MessagePage</div>
+    <div className='w-full'>
+      <Message/>
+    </div>
   )
 }
 

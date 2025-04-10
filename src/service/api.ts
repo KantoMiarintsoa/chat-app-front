@@ -45,3 +45,12 @@ export async function getMessages(userId: number, page: number = 1) {
     return (await api.get<PaginationResponse<Message>>(`chat/get/${userId}?page=${page}`)).data
 
 }
+
+export async function updateUser(data: FormData) {
+    return (await api.put<User>("users/update", data, {
+        headers: {
+            "Content-Type": "form-data"
+        }
+    })).data
+
+}
