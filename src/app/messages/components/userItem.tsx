@@ -22,7 +22,7 @@ function UserItem({sender,receiver,content,user}:UserItemProps) {
                     <p className='text-lg font-semibold text-white flex-1'>
                       {sender.id==user.id ? (
                         receiver.nickName?? `${receiver.username}`
-                      ):(sender.nickName?? `${receiver.username}`)}
+                      ):(sender.nickName?? `${sender.username}`)}
                     </p>
                     <p className='text-sm text-gray-50'>{content}</p>
 
