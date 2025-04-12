@@ -20,7 +20,9 @@ function UserItem({sender,receiver,content,user}:UserItemProps) {
                 src={sender.id===user.id?(receiver.profilePicture?? profile):(sender.profilePicture??profile)} alt='me' className='w-[50px] h-[50px] rounded-full  ' width={20} height={20} />
                 <div className='flex flex-col'>
                     <p className='text-lg font-semibold text-white flex-1'>
-                      {sender.id==user.id ? receiver.username:sender.username}
+                      {sender.id==user.id ? (
+                        receiver.nickName?? `${receiver.username}`
+                      ):(sender.nickName?? `${receiver.username}`)}
                     </p>
                     <p className='text-sm text-gray-50'>{content}</p>
 

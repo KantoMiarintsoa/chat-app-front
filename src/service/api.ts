@@ -52,5 +52,8 @@ export async function updateUser(data: FormData) {
             "Content-Type": "form-data"
         }
     })).data
+}
 
+export async function changeNickName(userID: number, nickname: string) {
+    return (await api.put<{ nickName: string }>(`chat/nickName/${userID}`, { nickName: nickname })).data
 }
